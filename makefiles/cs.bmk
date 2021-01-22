@@ -1,0 +1,37 @@
+# NetBSD bmake
+DEBUG= 1
+PROG= ${.CURDIR}/bin/${_DEBUG}/${NETCORE}/${.CURDIR:T}.dll
+
+SRCS =  Program.cs
+NETCORE = netcoreapp2.0
+.OBJDIR: .
+
+#CS = dotnet
+#_CSC = /usr/share/dotnet/sdk/${_SDKVER}/Roslyn/bincore/csc.dll
+#_SDKVER = 2.1.105
+RM = rm -f
+
+.if make(all)
+_DEBUG=Release
+MSBFLAGS=/p:Configuration=Release
+.elif ${DEBUG} != 0
+_DEBUG=Debug
+MSBFLAGS=/p:Configuration=Debug
+.endif
+
+.PHONY: all run clean install
+.SUFFIXES:
+.SUFFIXES: .cs
+all: ${PROG}
+
+${PROG}: ${SRCS}
+	@dotnet msbuild /nologo ${MSBFLAGS} ${.CURDIR:T}.csproj
+
+run: ${PROG}
+	@dotnet ${PROG}
+
+install: ${PROG}
+	ln -svf ${PROG}
+
+clean:
+	${RM} ${PROG} ${.CURDIR:T}.dll

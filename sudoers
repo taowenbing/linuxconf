@@ -1,0 +1,4 @@
+Defaults secure_path="/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin"
+root	ALL=(ALL) ALL
+taoweb  ALL=(ALL) ALL, (root) NOPASSWD: /sbin/shutdown,/usr/bin/zypper
+Defaults:taoweb timestamp_timeout=15

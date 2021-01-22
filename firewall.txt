@@ -1,0 +1,5 @@
+# firewall-cmd --list-ports
+# qbittorent ports:
+firewall-cmd --add-ports=10781/tcp
+firewall-cmd --add-ports=10781/udp
+firewall-cmd --add-ports=10783/udp

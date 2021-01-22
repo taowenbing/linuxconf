@@ -1,0 +1,39 @@
+#!/bin/sh
+# Start/stop/restart the DHCP Server (dhcpd)
+
+# Written for Slackware Linux by Erik Jan Tromp
+
+dhcpd_start() {
+  if [ -x /usr/sbin/dhcpd -a -f /boot/pxe/dhcpd.conf ]; then
+    echo "Starting dhcpd:  /usr/sbin/dhcpd -cf /boot/pxe/dhcpd.conf eth0"
+    /usr/sbin/dhcpd -cf /boot/pxe/dhcpd.conf eth0
+  fi
+}
+
+dhcpd_stop() {
+  if [ -r /var/run/dhcpd.pid ] ; then
+    kill `cat /var/run/dhcpd.pid`
+  else
+    killall dhcpd
+  fi
+}
+
+dhcpd_restart() {
+  dhcpd_stop
+  sleep 1
+  dhcpd_start
+}
+
+case "$1" in
+'start')
+  dhcpd_start
+  ;;
+'stop')
+  dhcpd_stop
+  ;;
+'restart')
+  dhcpd_restart
+  ;;
+*)
+  echo "usage: $0 start|stop|restart"
+esac

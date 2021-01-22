@@ -1,0 +1,44 @@
+===========================================================================================
+GRUB2安装到U盘：
+1、生成core.img（如上。注意grub-emb-bios.cfg文件）
+2、dd if=boot.img of=/dev/sdb bs=440 count=1
+3、dd if=core.img of=/dev/sdb bs=512 seek=1
+4、在U盘根目录建立/boot/grub2/bios/i386-pc目录及/boot/grub2/bios/grub.cfg文件
+
+UEFI在U盘启动时，计算机会先查找/efi/boot/bootx64.efi文件。
+UEFI在光盘启动，efi目录同上。同时要生成1M的efiboot.img文件（如下面方法，也可用winimage生成，
+但好像要bootx64.efi，bootia32.efi两个文件）
+===========================================================================================
+# Then, create a FAT formatted image that contains bootx64.efi in the
+# /EFI/BOOT directory.  This is used to bootstrap GRUB from the ISO image.
+dd if=/dev/zero of=efiboot.img bs=1K count=1440
+# Format the image as FAT12:
+mkdosfs -F 12 efiboot.img
+# Create a temporary mount point:
+MOUNTPOINT=$(mktemp -d)
+# Mount the image there:
+mount -o loop efiboot.img $MOUNTPOINT
+# Copy the GRUB binary to /EFI/BOOT:
+mkdir -p $MOUNTPOINT/EFI/BOOT
+cp -a bootx64.efi $MOUNTPOINT/EFI/BOOT
+# Unmount and clean up:
+umount $MOUNTPOINT
+rmdir $MOUNTPOINT
+# Move the efiboot.img to ../../isolinux:
+mv efiboot.img ../../isolinux
+
+echo
+echo "Done building /EFI/BOOT/bootx64.efi and /isolinux/efiboot.img."
+===========================================================================================
+mkisofs -o ../linux.iso \
+  -R -J -A "Linux Install" -V "LinuxCD" \
+  -hide-rr-moved \
+  -v -d -N \
+  -no-emul-boot -boot-load-size 4 -boot-info-table \
+  -b boot/grub2/g2ldr.bin \
+  -c boot/grub2/boot.cat \
+  -eltorito-alt-boot -no-emul-boot -eltorito-platform 0xEF \
+  -eltorito-boot boot/grub2/efiboot.img \
+  cdroot
+
+===========================================================================================

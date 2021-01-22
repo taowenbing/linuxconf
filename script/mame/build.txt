@@ -1,0 +1,45 @@
+http://mamedev.org/downloader.php?file=releases/mame0141s.exe
+http://mamedev.org/downloader.php?file=releases/mame0141s.zip
+http://mamedev.org/updates/0141u1_diff.zip
+===============================================================
+
+Here's how to build SDLMAME 0.137 on Linux/*BSD/OS X:
+
+0a) It's assumed you have SDL installed. For Linux/BSD refer to our sticky post for the 
+correct thing to tell yum or apt.
+
+0b) For Mac OS X, go to the SDL download page and download the .dmg under "Runtime 
+Libraries" then "Mac OS X". When the .dmg opens, use the Finder to drag the 
+SDL.Framework folder into your /Library/Frameworks folder. That's it. (If you've 
+previously run SDLMAME you probably don't need to do this again unless your installed 
+SDL is older than 1.2.14).
+
+1) Download MAME 0.137 from mamedev.org. You want the .zip. Unzip it (which creates 
+mame.zip) then unzip that to create a mame0137 folder and contents.
+
+2) In a command window, cd into the mame0137 folder. If this is an integer release 
+(0.137, 0.138, etc) skip to 3). For a u1/u2/uX release, continue with the "2.5" steps 
+immediately below this.
+
+2.5a) For non-integer releases (u1, u2, etc), unzip the .diff files and the "endings" 
+utility from here into your mame folder.
+
+2.5b) Run tne "endings" utility with ./endings.
+
+2.5c) Patch the source. For each patch starting with u1, type patch -p0 <0.137u1.diff 
+(change the .diff filename to match your version). Go in order: apply u1, then u2, then 
+u3.
+
+2.5d) EXCEPTION: if you previously patched your source and a new "u" version is out, you 
+only need to do a make clean and apply the new patch. The previous patches will stay 
+there unless you unzip the base version again.
+
+*****************************************************************************
+2.5e) patch -E -p1 < wolf141.diff
+
+2.5f) patch -E -p1 < inpview16-141.diff
+*****************************************************************************
+
+3) For Intel 32 and 64-bit and PowerPC builds on Windows, Linux, *BSD, and OS X the 
+makefile will auto-detect your OS and you simply can type "make" or "make -j3" for 
+dual-cores.

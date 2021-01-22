@@ -1,0 +1,37 @@
+#!/bin/sh
+exec tail -n +3 $0
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+
+set default='winxp'
+
+menuentry 'Windows' --id winxp {
+	insmod part_gpt
+	insmod fat
+	set root='hd0,gpt1'
+	if [ x$feature_platform_search_hint = xy ]; then
+	  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt1 --hint-efi=hd0,gpt1 --hint-baremetal=ahci0,gpt1 9206-2409
+	else
+	  search --no-floppy --fs-uuid --set=root 9206-2409
+	fi
+	chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+
+menuentry 'openSUSE Leap' --id opensuse {
+	load_video
+	set gfxpayload=keep
+	insmod gzio
+	insmod part_gpt
+	insmod ext2
+	set root='hd0,gpt3'
+	if [ x$feature_platform_search_hint = xy ]; then
+	  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt3 --hint-efi=hd0,gpt3 --hint-baremetal=ahci0,gpt3  92072185-7649-4b67-875e-a13eac31813d
+	else
+	  search --no-floppy --fs-uuid --set=root 92072185-7649-4b67-875e-a13eac31813d
+	fi
+	echo	'Loading Linux ...'
+	linuxefi /vmlinuz root=UUID=a5fb1d31-51a8-4cd0-b0e2-488d5545512d  resume=/dev/disk/by-uuid/186ee349-5ba6-41ac-99dd-fea63e872c9d showopts nouveau.modeset=0
+	echo	'Loading initial ramdisk ...'
+	initrdefi /initrd
+}

@@ -1,0 +1,105 @@
+Xft.antialias: 1
+Xft.dpi: 96
+Xft.hinting: 1
+Xft.hintstyle: hintfull
+Xft.lcdfilter: lcddefault
+Xft.rgba: rgb
+
+!look and feel
+xterm.termName: xterm-256color
+xterm*geometry: 90x32
+xterm*scrollBar: false
+xterm*rightScrollBar: true
+xterm*loginshell: true
+!xterm*cursorBlink: true
+xterm*background: black
+xterm*foreground: gray
+xterm.borderLess: true
+xterm.cursorBlink: true
+!xterm.colorUL: yellow3
+!xterm.colorBD: Green
+
+!fix alt key input
+xterm*eightBitInput: false
+xterm*altSendsEscape: true
+
+!font and locale
+!xterm*locale: true
+!xterm.utf8: true
+!xterm*utf8Title: true
+!xterm*fontMenu*fontdefault*Label: Default
+!xterm*faceName: DejaVu Sans Mono:antialias=True:pixelsize=13
+!!xterm*faceName: monofur:antialias=True:pixelsize=20
+!!xterm*boldFont: DejaVu Sans Mono:style=Bold:pixelsize=15
+!xterm*faceNameDoublesize: SimSun:pixelsize=13:antialias=True
+!xterm*xftAntialias: true
+!xterm*cjkWidth:false
+
+xterm.color1:Red2
+xterm.color4:RoyalBlue
+xterm.color5:Magenta2
+xterm.color8:Gray50
+xterm.color10:Green2
+xterm.color12:DodgerBlue
+xterm.color14:Cyan2
+xterm.color15:Gray95
+!!-- Tango color scheme
+!*xterm*color0: #2e3436
+!*xterm*color1: #cc0000
+!*xterm*color2: #4e9a06
+!*xterm*color3: #c4a000
+!*xterm*color4: #3465a4
+!*xterm*color5: #75507b
+!*xterm*color6: #0b939b
+!*xterm*color7: #d3d7cf
+!*xterm*color8: #555753
+!*xterm*color9: #ef2929
+!*xterm*color10: #8ae234
+!*xterm*color11: #fce94f
+!!*xterm*color12: #729fcf
+!*xterm*color12:DodgerBlue
+!*xterm*color13: #ad7fa8
+!*xterm*color14: #00f5e9
+!*xterm*color15: #eeeeec
+
+xterm*font  : -*-tamzen-medium-*-*-*-16-*-*-*-*-*-*-*
+xterm*font1 : -*-tamzen-medium-*-*-*-9-*-*-*-*-*-*-*
+xterm*font2 : -*-tamzen-medium-*-*-*-12-*-*-*-*-*-*-*
+xterm*font3 : -*-tamzen-medium-*-*-*-13-*-*-*-*-*-*-*
+xterm*font4 : -*-tamzen-medium-*-*-*-15-*-*-*-*-*-*-*
+xterm*font5 : -*-tamzen-medium-*-*-*-16-*-*-*-*-*-*-*
+xterm*font6 : -*-tamzen-medium-*-*-*-20-*-*-*-*-*-*-*
+
+URxvt.scrollBar: false
+URxvt.foreground: gray
+URxvt*geometry: 90x50
+!URxvt.depth:32
+URxvt.background:[90]#000000
+!URxvt.foreground:#ffffff
+!URxvt.colorBD:SteelBlue3
+URxvt.colorBD:Yellow3
+URxvt.colorUL:Green
+URxvt.color1:Red2
+URxvt.color4:RoyalBlue
+URxvt.color5:Magenta2
+URxvt.color8:Gray50
+URxvt.color10:Green2
+URxvt.color12:DodgerBlue
+URxvt.color14:Cyan2
+URxvt.color15:Gray95
+!URxvt.borderLess:False
+
+URxvt.font  : -*-tamzenforpowerline-medium-*-*-*-16-*-*-*-*-*-*-*, \
+	      xft:SimSun:pixelsize=13:antialias=True
+URxvt.font1 : -*-tamzenforpowerline-medium-*-*-*-9-*-*-*-*-*-*-*
+URxvt.font2 : -*-tamzenforpowerline-medium-*-*-*-12-*-*-*-*-*-*-*
+URxvt.font3 : -*-tamzenforpowerline-medium-*-*-*-13-*-*-*-*-*-*-*
+URxvt.font4 : -*-tamzenforpowerline-medium-*-*-*-15-*-*-*-*-*-*-*
+URxvt.font5 : -*-tamzenforpowerline-medium-*-*-*-16-*-*-*-*-*-*-*
+URxvt.font6 : -*-tamzenforpowerline-medium-*-*-*-20-*-*-*-*-*-*-*
+
+!Emacs*useXIM: false
+!Emacs.geometry: 106x35
+!Emacs.font: Monaco 10
+!Emacs*foreground: grey80
+!Emacs*background: black

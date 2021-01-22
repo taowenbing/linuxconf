@@ -1,0 +1,32 @@
+#color blue/green yellow/red white/magenta white/magenta
+#timeout 5
+default 1
+
+password --md5 $1$sZydF/$UE8bcDc9B19sQitIwgsDn0
+
+title Microsoft Windows
+#password --md5 $1$nCkXV/$RlgoZO/h09oq7dmB4C4Jz1
+root (hd0,0)
+chainloader +1
+
+title Slackware Linux
+password --md5 $1$NGHcI/$jlrglXQ10cE6RH/4xF.Xi0
+root (hd0,5)
+kernel /vmlinuz root=/dev/sda7 rootfstype=ext4 ro vga=773 nomodeset
+initrd /initrd.gz
+
+#title Disk Operating System
+#root (hd0,9)
+#kernel /boot/pxe/imgs/memdisk c=40 h=8 s=36
+#initrd /boot/pxe/imgs/drdos.img
+
+#title Slackware Linux (UUID)
+#password --md5 $1$NGHcI/$jlrglXQ10cE6RH/4xF.Xi0
+#root (hd0,5)
+#kernel /vmlinuz root=UUID=4cb12b65-4678-4267-b72d-c196534020c0 rootfstype=ext4 ro vga=773
+
+#title openSUSE 11.2 - 2.6.31.5-0.1
+#password --md5 $1$y/H0W/$hq0IqsXNANrkYiSOkqHa00
+#    root (hd0,9)
+#    kernel /boot/vmlinuz-2.6.31.5-0.1-desktop root=/dev/disk/by-id/ata-WDC_WD5000AAKS-00V1A0_WD-WCAWF2051062-part10 resume=/dev/sda7 splash=silent quiet showopts vga=791
+#    initrd /boot/initrd-2.6.31.5-0.1-desktop

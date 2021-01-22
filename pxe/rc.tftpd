@@ -1,0 +1,35 @@
+#!/bin/sh
+# Start/stop/restart the IPv4 Trivial File Transfer Protocol server (in.tftpd)
+
+# Written for Slackware Linux by Erik Jan Tromp
+
+tftpd_start() {
+  if [ -x /usr/sbin/in.tftpd ]; then
+    echo "Starting in.tftpd:  /usr/sbin/in.tftpd -l -s /boot/pxe/"
+    /usr/sbin/in.tftpd -l -s /boot/pxe/
+  fi
+}
+
+tftpd_stop() {
+  killall in.tftpd
+}
+
+tftpd_restart() {
+  tftpd_stop
+  sleep 1
+  tftpd_start
+}
+
+case "$1" in
+'start')
+  tftpd_start
+  ;;
+'stop')
+  tftpd_stop
+  ;;
+'restart')
+  tftpd_restart
+  ;;
+*)
+  echo "usage: $0 start|stop|restart"
+esac

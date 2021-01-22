@@ -1,0 +1,12 @@
+default slack
+prompt 1
+timeout 600
+display help.txt
+F1 help.txt
+
+label slack
+  kernel slack/hugesmp.s
+  append initrd=slack/initrd.img
+
+label grub
+  kernel grub.exe

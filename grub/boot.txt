@@ -1,0 +1,4 @@
+07
+[09fdos07]          freedos bare-image
+[09debian07]        debian hd-media
+[09netboot07]       debian netboot(default)

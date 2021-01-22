@@ -1,0 +1,61 @@
+# NetBSD bmake
+DEBUG= 1
+PROG= ${.CURDIR}/${SRCS:[1]:T:R}
+
+SRCS=  frng.f
+FORMOD_SRCS= 
+
+OBJS= ${SRCS:T:R:S/$/.o/}
+.if empty(FORMOD_SRCS)
+FORMOD_OBJS=
+.else
+FORMOD_OBJS= ${FORMOD_SRCS:T:R:S/$/.o/}
+.endif
+
+_objdir = ${.CURDIR}/objs
+.if !exists(${_objdir}/) 
+_objdir_made != echo ${_objdir}/; mkdir -p ${_objdir}
+.endif
+_allsrcs= ${SRCS} ${FORMOD_SRCS}
+SRC_DIRS= ${_allsrcs:H:O:u:%=${.CURDIR}/%}
+.OBJDIR: ${_objdir}
+.PATH: ${SRC_DIRS}
+.NOPATH: ${OBJS}
+
+FC = gfortran
+LD = ld
+RM = rm -f
+
+FFLAGS = -Wall -Wno-tabs -pipe
+LDFLAGS =
+
+.if make(all)
+FFLAGS += -Ofast -march=native -mfpmath=sse -msse3 \
+    -funroll-loops --param max-unroll-times=4
+.elif ${DEBUG} != 0
+FFLAGS += -g
+.endif
+
+.PHONY: all objs run clean
+FOR_SUFFIXES?= .f .for .f90
+.SUFFIXES: ${FOR_SUFFIXES}
+all: ${PROG}
+objs: ${OBJS}
+
+.if empty(FORMOD_OBJS)
+${PROG}: ${OBJS}
+.else
+.ORDER: ${FORMOD_OBJS} ${OBJS}
+${OBJS}: ${FORMOD_OBJS}
+${PROG}: ${FORMOD_OBJS} ${OBJS}
+.endif
+	${FC} -o ${.TARGET} ${.ALLSRC} ${LDFLAGS}
+
+${FOR_SUFFIXES:%=%.o}:
+	${FC} ${FFLAGS} -o ${.TARGET} -c ${.IMPSRC}
+
+clean:
+	${RM} ${OBJS} ${FORMOD_OBJS}
+
+run: ${PROG}
+	@${PROG}

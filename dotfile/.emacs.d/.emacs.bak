@@ -1,0 +1,157 @@
+;; Setting English Font
+;;(set-face-attribute 'default nil :font "Monaco 10")
+
+;; Chinese Font
+(defun zh-font-setting ()
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font (frame-parameter nil 'font)
+		      charset
+		      ;;(font-spec :family "Microsoft Yahei" :size 12)))
+		      (font-spec :family "Microsoft Yahei"))))
+
+(if (and (fboundp 'daemonp) (daemonp)) 
+    (add-hook 'after-make-frame-functions
+	      (lambda (new-frame)
+		(with-selected-frame new-frame
+				   (zh-font-setting))))
+  (zh-font-setting))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (column-number-mode 1)
+(menu-bar-mode 1)
+(tool-bar-mode -1)
+(set-scroll-bar-mode 'right)
+(blink-cursor-mode -1)
+;; eliminate long "yes" or "no" prompts
+(fset 'yes-or-no-p 'y-or-n-p)
+(setq inhibit-startup-message t)
+(setq scroll-conservatively 10000)	;scroll smooth
+;; day && date && time
+(setq display-time-24hr-format t)
+(setq display-time-day-and-date t)
+(display-time-mode 1)
+;; (setq make-backup-files nil)
+(setq backup-directory-alist (quote (("." . "~/.emacs.d/.backups"))))
+;; bookmarks
+(setq bookmark-save-flag 1)
+(setq bookmark-default-file "~/.emacs.d/.emacs.bmk")
+
+;; c & c++ start.
+(add-hook 'c-mode-common-hook
+	  (lambda ()
+	    (unless (or (file-exists-p "makefile")
+			(file-exists-p "Makefile"))
+	      (set (make-local-variable 'compile-command)
+		   (concat "gcc -Wall -Wextra -pipe " (buffer-file-name) " -g")))
+	    (local-set-key [f7] 'compile)
+	    (c-set-style "bsd")))
+;; c && c++ end.
+
+;; TeX start.
+(add-hook 'tex-mode-hook
+	  (lambda ()
+	    (add-to-list 'tex-compile-commands
+			 '("pdftex %f" "%r.tex"))))
+(setq tex-run-command "luatex")
+
+(defun tao-runmpost ()
+  "mpost -tex=tex"
+  (interactive)
+  (compile (concat "mpost " (buffer-file-name))))
+
+(defun tao-runmproof ()
+  "tex mproof *.eps"
+  (interactive)
+  (compile (concat "xetex mproof " (file-name-sans-extension buffer-file-name) "-*.eps")))
+  
+(add-hook 'metapost-mode-hook
+	  (lambda ()
+	    (local-set-key [C-f7]  'tao-runmpost)
+	    (local-set-key [f7]  'tao-runmproof)))
+;; TeX end.
+
+;; perl start.
+(defun tao-runperl-w (cw)
+  "perl -w"
+  (interactive "p")
+  (let ((arg (if (= cw 4) "-cw " "-w ")))
+    (compile (compilation-read-command
+	    (concat "perl " arg  (buffer-file-name) " ")))))
+
+(defun tao-perl-package (name)
+  (interactive "spackage name: ")
+  (insert (concat "{package " name ";"))
+  (newline 2)
+  (insert (concat "} # package " name " end.\n"))
+  (forward-line -2))
+
+(add-hook 'perl-mode-hook
+	  (lambda ()
+	    (local-set-key "\C-c\C-o" 'tao-perl-package)
+	    (local-set-key [f7]  'tao-runperl-w)))
+;; perl end.
+
+(defun tao-copy-upline ()
+  (interactive)
+  (let (s e)
+    (save-excursion
+      (previous-line)
+      (setq s (point))
+      (end-of-line)
+      (setq e (point)))
+    (insert-buffer-substring (current-buffer) s e)))
+(global-set-key [C-f6] 'tao-copy-upline)
+
+(defun tao-copy-upword (&optional num)
+  (interactive "p")
+  (let (s e)
+    (save-excursion
+      (previous-line)
+      (setq s (point))
+      (forward-word (or num 1))
+      (setq e (point)))
+    (insert-buffer-substring (current-buffer) s e)
+    (setq this-command nil)))
+(global-set-key [f6] 'tao-copy-upword)
+
+;; scheme start.
+(setq scheme-program-name "guile")
+;; scheme end.
+
+;; cedet start.
+;(load "~/.emacs.d/plugins/cedet-1.1/common/cedet")
+;(global-ede-mode 1)                      ; Enable the Project management system
+;(semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
+;(global-srecode-minor-mode 1)            ; Enable template insertion menu
+;; cedet stop.
+
+(setq tao-major-mode 'text-mode)
+(defun tao-change-mode ()
+  (interactive)
+  (if (eq major-mode 'text-mode)
+      (funcall tao-major-mode)
+    (setq tao-major-mode major-mode)
+    (text-mode)))
+(global-set-key [f8] 'tao-change-mode)
+
+;(global-set-key (kbd "C-x C-b") 'buffer-menu)
+(global-set-key (kbd "C-m") 'newline-and-indent)
+(global-set-key (kbd "C-j") 'newline)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (add-to-list 'load-path "~/.emacs.d/lisp")
+;; (require 'color-theme)
+;; (setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
+;; (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+;; auto-complete
+(add-to-list 'load-path "~/.emacs.d/plugins/ac")
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/plugins/ac/ac-dict")
+(ac-config-default)
+;;(setq ac-auto-start nil)
+;;(ac-set-trigger-key "TAB")
+(setq ac-use-quick-help nil)
+(setq ac-auto-show-menu nil)
+(define-key ac-mode-map (kbd "M-/") 'auto-complete)
+(define-key ac-completing-map "\M-/" 'ac-stop)
+(put 'erase-buffer 'disabled nil)

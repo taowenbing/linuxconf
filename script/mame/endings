@@ -1,0 +1,1 @@
+find . -type f -not -name uismall.png | xargs perl -pi -e 's/\r\n?/\n/g'

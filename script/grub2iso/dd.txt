@@ -1,0 +1,11 @@
+#GRUB2 ==> U disk (/dev/sdX)
+dd if=boot.img of=/dev/sdX bs=440 count=1
+dd if=core.img of=/dev/sdX bs=512 seek=1
+
+mkdir -p /dev/sdX/grub2/bios/i386-pc
+touch /dev/sdX/grub2/bios/grub.cfg
+
+mkdir -p /dev/sdX/grub2/uefi/x86_64-efi
+touch /dev/sdX/grub2/uefi/grub.cfg
+
+touch /dev/sdX/efi/boot/bootx64.efi

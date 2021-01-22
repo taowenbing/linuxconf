@@ -1,0 +1,45 @@
+# NetBSD bmake
+SRCS= x.tex
+MP_SRCS=fig.mp
+PIC.TEX= fig.tex
+
+TEX = luatex
+MP = mpost
+PDFVIEW= okular
+RM = rm -f
+
+TFLAGS =
+MFLAGS =
+
+.PHONY: all v clean
+.SUFFIXES: .tex .pdf .mp .mps
+
+all:
+.if empty(MP_SRCS)
+	${TEX} ${TFLAGS} ${SRCS}
+.else
+	${MP} ${MFLAGS} ${MP_SRCS}
+.endif
+
+v:
+.if empty(MP_SRCS)
+	${PDFVIEW} ${SRCS:R}.pdf
+.else
+	${TEX} ${TFLAGS} ${PIC.TEX}
+	${PDFVIEW} ${PIC.TEX:R}.pdf
+.endif
+
+.if empty(MP_SRCS)
+_delfiles=${.aux .log .toc:L:@v@${SRCS:R}$v@}
+.else
+_delfiles=${MP_SRCS:R}*.mps ${MP_SRCS:R}.mpx ${PIC.TEX:R}.log
+.endif
+
+clean:
+	${RM} ${_delfiles}
+
+.tex.pdf:
+	${TEX} ${TFLAGS} ${.IMPSRC}
+
+.mp.mps:
+	${MP} ${MFLAGS} ${.IMPSRC}

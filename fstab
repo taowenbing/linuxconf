@@ -1,0 +1,5 @@
+UUID=a5fb1d31-51a8-4cd0-b0e2-488d5545512d  /          ext4  acl,user_xattr               0  1
+UUID=186ee349-5ba6-41ac-99dd-fea63e872c9d  swap       swap  defaults                     0  0
+UUID=92072185-7649-4b67-875e-a13eac31813d  /boot      ext3  defaults                     0  2
+UUID=5d4d8ef5-fa68-4cff-8e5a-419ddc686c2f  /home      ext4  data=ordered,acl,user_xattr  0  2
+UUID=9206-2409                             /boot/efi  vfat  defaults                     0  0
