@@ -1,3 +1,6 @@
+[user]
+	name = dximg
+	email = dximg@msn.com
 [core]
-	editor = me
 	autocrlf = input
+	editor = me

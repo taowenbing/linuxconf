@@ -48,4 +48,3 @@ stty -ixon -ixoff	# disable XON XOFF (software flow control)
 
 export MAN_POSIXLY_CORRECT=1
 export EDITOR=/usr/local/bin/me
-#export GIT_EDITOR=$EDITOR # git config --global core.editor "me"
