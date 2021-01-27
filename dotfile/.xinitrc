@@ -1,7 +1,7 @@
 xset b 10 4000 200
 xset s 1800
 xset dpms 0 0 3600
-xset +fp ~/.local/share/fonts/tamzen-font-master/bdf
+xset +fp ~/.local/share/fonts/tamzen-font/bdf
 #xset fp rehash
 #xsetroot -mod 2 2 -fg rgb:55/40/55 -bg rgb:70/50/70
 
@@ -24,7 +24,6 @@ fcitx -d
 #numlockx on
 
 ##exec ck-launch-session startxfce4
-#exec fvwm
 #exec startfluxbox
 #exec dbus-launch --exit-with-session gnome-session
 #exec dbus-launch --exit-with-session startkde
