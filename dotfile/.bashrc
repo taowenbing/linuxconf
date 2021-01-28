@@ -34,7 +34,8 @@ alias global='global --result=grep'
 alias ip='ip -c=never'
 
 #acme_font=/mnt/font/FixedsysExcelsiorIIIb/12/font
-acme_font=/mnt/font/GoMono/11a/font
+#acme_font=$HOME/.local/share/fonts/acme-font/Go-Mono/Go-Mono.14.font
+acme_font=$HOME/.local/share/fonts/acme-font/font.hack/R.14.font
 alias em="$PLAN9/bin/acme -a -f $acme_font"
 alias acme='tabstop=8 em'
 
