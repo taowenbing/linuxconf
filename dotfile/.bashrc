@@ -31,9 +31,12 @@ alias j='jobs -l'
 alias h='history 25'
 alias startx='startx -- -dpi 96'
 alias global='global --result=grep'
-alias em='$PLAN9/bin/acme -a -f /mnt/font/FixedsysExcelsiorIIIb/12/font'
-alias acme='tabstop=8 em'
 alias ip='ip -c=never'
+
+#acme_font=/mnt/font/FixedsysExcelsiorIIIb/12/font
+acme_font=/mnt/font/GoMono/11a/font
+alias em="$PLAN9/bin/acme -a -f $acme_font"
+alias acme='tabstop=8 em'
 
 case "$TERM" in
 "dumb")
