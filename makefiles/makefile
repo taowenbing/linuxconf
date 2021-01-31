@@ -1,148 +1,86 @@
-# NetBSD bmake
-DEBUG= 1
-PROG= ${.CURDIR}/${SRCS:[1]:T:R}
+DEBUG = 1
+PROG = $(patsubst %.c,%,$(notdir $(word 1, $(SRC_FILES))))
+######################################################################
+SRC_FILES = main.c
 
-SRCS=  main.c csapp.c
-FORMOD_SRCS= 
+OBJ_FILES = \
+  $(foreach file,$(sort $(SRC_FILES)),$(OBJ_DIR)/$(basename $(notdir $(file))).o)
+OBJ_DIR = objs
 
-OBJS= ${SRCS:T:N*.h:R:S/$/.o/}
-.if empty(FORMOD_SRCS)
-FORMOD_OBJS=
-.else
-FORMOD_OBJS= ${FORMOD_SRCS:T:R:S/$/.o/}
-.endif
-_objdir = ${.CURDIR}/objs
-.if !exists(${_objdir}/) 
-_objdir_made != echo ${_objdir}/; mkdir -p ${_objdir}
-.endif
-_allsrcs= ${SRCS} ${FORMOD_SRCS}
-SRC_DIRS= ${_allsrcs:H:O:u:%=${.CURDIR}/%}
-.OBJDIR: ${_objdir}
-.PATH: ${SRC_DIRS}
-.NOPATH: ${OBJS} ${FORMOD_OBJS}
+#
+# Deduce include directories from the source file list. The sort function
+# removes duplicates and is used to construct a set.
+#
+INCLUDE_DIRS = $(sort $(foreach file,$(SRC_FILES),$(dir $(file))))
+
+#
+# VPATH is the search path for files. This trick allows a single %.c rule to
+# be matched against files in sub-directories of src/.
+#
+VPATH = $(INCLUDE_DIRS)
 
 CC = gcc
 CXX = g++
-CXX.c=
-FC = gfortran
-FC.c=
-AS := ${CC} -c
+AS = gcc -c
 ASM = nasm
-JASM = uasm
-LEX = flex
-YACC = bison
 LD = ld
-LD.c=
-JLD = jwlink
-JLD.c=
 RM = rm -f
 
-CFLAGS = -Wall -pipe #${SRC_DIRS:%=-I%}
-CXXFLAGS = -Wall -pipe ${SRC_DIRS:%=-I%}
-FFLAGS = -Wall -pipe -Wno-tabs
-AFLAGS = -Wall -pipe
-ASMFLAGS = -felf64
-JASMFLAGS = -q -elf64
+CFLAGS = -Wall -pipe -std=gnu99 $(addprefix -I,$(INCLUDE_DIRS))
+CXXFLAGS = -Wall -pipe $(addprefix -I,$(INCLUDE_DIRS))
+ASFLAGS = -Wall -pipe
+ASMFLAGS = -felf64 -s $(addprefix -I,$(INCLUDE_DIRS))
 LDFLAGS =
-JLDFLAGS = op q
-.if defined(com)
-JLDFLAGS += sys com
-.else
-JLDFLAGS += sys dos
-.endif
-BLDFLAGS= -e _start -Ttext=${BINARY_ORG} -N -S --oformat binary
-BINARY_ORG = 0x0
 
-.if make(all)
-CFLAGS += -O2 -march=native -mfpmath=sse
-CXXFLAGS += -O2
-FFLAGS += -Ofast -march=native -mfpmath=sse -msse3 \
-    -funroll-loops --param max-unroll-times=4
-AFLAGS += -O2
-ASMFLAGS += -Ox
-.elif ${DEBUG} != 0
+ifneq ($(DEBUG),0)
 CFLAGS += -g
 CXXFLAGS += -g
-FFLAGS += -g
-AFLAGS += -g
+ASFLAGS += -g
 ASMFLAGS += -g -O0
-JASMFLAGS += -Zi
-#JLDFLAGS += d d
-.endif
+else
+all o: CFLAGS += -O2 #-march=native -mfpmath=sse
+all o: CXXFLAGS += -O2
+all o: ASFLAGS += -O2
+all o: ASMFLAGS += -Ox
+debug: CFLAGS += -g
+debug: CXXFLAGS += -g
+debug: ASFLAGS += -g
+debug: ASMFLAGS += -g -O0
+endif
+######################################################################
+.PHONY: all debug o depend clean distclean
+all debug: $(OBJ_DIR) $(PROG)
+o: $(OBJ_DIR) $(OBJ_FILES)
 
-.PHONY: all objs run clean cleandep
-FOR_SUFFIXES?= .f .for .f90
-.SUFFIXES: ${FOR_SUFFIXES} .asm .l .y
-all: ${PROG}
-objs: ${OBJS}
+$(OBJ_DIR):
+	mkdir $@
 
-.if empty(FORMOD_OBJS)
-.if !empty(FC.c)
-CC=${FC}
-.elif !empty(CXX.c)
-CC = ${CXX}
-.endif
-.if !empty(LD.c)
-${PROG}: ${OBJS}
-.if empty(JLD.c)
-	${LD} -o ${.TARGET} ${.ALLSRC} ${BLDFLAGS}
-.else
-	${JLD} n ${.TARGET} ${JLDFLAGS} f {${.ALLSRC}}
-.endif
-.else
-${PROG}: ${OBJS}
-	${CC} -o ${.TARGET} ${.ALLSRC} ${LDFLAGS}
-.endif
-.else
-.ORDER: ${FORMOD_OBJS} ${OBJS}
-${OBJS}: ${FORMOD_OBJS}
-${PROG}: ${FORMOD_OBJS} ${OBJS}
-	${FC} -o ${.TARGET} ${.ALLSRC} ${LDFLAGS}
-.endif
+$(PROG): $(OBJ_FILES)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-.c.o:
-	${CC} ${CFLAGS} -o ${.TARGET} -c ${.IMPSRC}
+$(OBJ_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-.cc.o .C.o:
-	${CXX} ${CXXFLAGS} -o ${.TARGET} -c ${.IMPSRC}
+$(OBJ_DIR)/%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-${FOR_SUFFIXES:%=%.o}:
-	${FC} ${FFLAGS} -o ${.TARGET} -c ${.IMPSRC}
+$(OBJ_DIR)/%.o: %.s
+	$(AS) $(ASFLAGS) -o $@ $<
 
-.s.o .S.o:
-	${AS} ${AFLAGS} -o ${.TARGET} -c ${.IMPSRC}
+$(OBJ_DIR)/%.o: %.asm
+	$(ASM) $(ASMFLAGS) -o $@ $<
 
-.asm.o:
-	${JASM} ${JASMFLAGS} -Fo ${.TARGET} ${.IMPSRC}
+depend::
+	@$(RM) .depend; \
+	for c in $(filter %.c %.cc,$(SRC_FILES)); do \
+		$(CC) $(CFLAGS) -MM $$c >> .depend; \
+	done
+	@sed -i 's/\(.*\)\.o:/$(OBJ_DIR)\/\1.o:/' .depend
 
-.l.o:
-	${LEX} -o ${.PREFIX}.c ${.IMPSRC}
-	${CC} ${CFLAGS} -o ${.TARGET} -c ${.PREFIX}.c
-	@${RM} ${.PREFIX}.c
-
-.y.o:
-	${YACC} -d -o ${.PREFIX}.c ${.IMPSRC}
-	${CC} ${CFLAGS} -o ${.TARGET} -c ${.PREFIX}.c
-	@${RM} ${.PREFIX}.c
+sinclude .depend
 
 clean:
-	${RM} ${OBJS} ${FORMOD_OBJS}
+	$(RM) $(OBJ_FILES)
 
-run: ${PROG}
-	@${PROG}
-
-# generated dependency files
-_depsrcs=${SRCS:M*.c}
-.if !empty(_depsrcs)
-_depsrcs:=${_depsrcs:T:R:S/$/.d/}
-cleandep: clean
-	${RM} ${_depsrcs}
-.if defined(gendep)
-CFLAGS_MD?=-MMD
-CFLAGS_MF?=-MF ${.TARGET:T:R}.d -MT ${.TARGET:T:R}.o
-CFLAGS+= ${CFLAGS_MD} ${CFLAGS_MF}
-.endif
-.for d in ${_depsrcs}
-.dinclude "$d"
-.endfor
-.endif
+distclean: clean
+	$(RM) $(PROG)
