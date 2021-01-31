@@ -1,5 +1,5 @@
 DEBUG = 1
-PROG = $(patsubst %.c,%,$(notdir $(word 1, $(SRC_FILES))))
+PROG = $(basename $(notdir $(word 1, $(SRC_FILES))))
 ######################################################################
 SRC_FILES = main.c
 
